@@ -210,7 +210,6 @@ $('#passwordRecoveryForm').addEventListener('submit', async (e) => {
 
   say('Admin password updated successfully! Please sign in.');
 });
-
 function say(msg){$('#authMessage').textContent=msg}
 function clock(){$('#clock').textContent=new Date().toLocaleString([], {weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}clock();setInterval(clock,30000);
 $('#loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!sb)return say('Configure config.js first.');say('Signing in…');const {data,error}=await sb.auth.signInWithPassword({email:$('#email').value,password:$('#password').value});if(error)return say(error.message);session=data.session;await enterApp()});
@@ -500,7 +499,42 @@ window.activityLogExportData = filteredData;
   await loadLogs();
 }
 
-async function go(page){if(profile.role!=='admin')return;document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('#content').innerHTML='<div class="panel">Loading cloud data…</div>';try{if(page==='Dashboard')await renderDashboard();else if(page==='Live Map & Tracking')await renderMapPage();else if(page==='Waste Bins')await renderTablePage(page,'waste_bins',['bin_code','waste_type','fill_level','status']);else if(page==='Pickup Requests')await renderTablePage(page,'pickup_requests',['request_code','citizen_name','phone','pickup_address','waste_type','status','created_at']);else if(page==='Collection Vehicles')await renderTablePage(page,'vehicles',['vehicle_code','driver_name','route_name','status']);else if(page==='Citizens')await renderTablePage(page,'citizens',['full_name','area','phone']);else if(page==='Waste Analytics')await renderAnalytics();else if(page==='Notifications') await renderNotifications();else if(page==='Activity Logs') await renderActivityLogs();else if(page==='Settings')$('#content').innerHTML='<h2 class="page">Settings</h2>'+panel('Administrator Settings',`<p>Signed in as ${session.user.email}</p><p>Cloud database: Connected to Supabase</p><p>Role: ${profile.role}</p>`)}catch(e){$('#content').innerHTML=`<div class="notice">Could not load ${page}: ${e.message}</div>`}}
+async function go(page){if(profile.role!=='admin')return;document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('#content').innerHTML='<div class="panel">Loading cloud data…</div>';try{if(page==='Dashboard')await renderDashboard();else if(page==='Live Map & Tracking')await renderMapPage();else if(page==='Waste Bins')await renderTablePage(page,'waste_bins',['bin_code','waste_type','fill_level','status']);else if(page==='Pickup Requests')await renderTablePage(page,'pickup_requests',['request_code','citizen_name','phone','pickup_address','waste_type','status','created_at']);else if(page==='Collection Vehicles')await renderTablePage(page,'vehicles',['vehicle_code','driver_name','route_name','status']);else if(page==='Citizens')await renderTablePage(page,'citizens',['full_name','area','phone']);else if(page==='Waste Analytics')await renderAnalytics();else if(page==='Notifications') await renderNotifications();else if(page==='Activity Logs') await renderActivityLogs();
+else if(page==='Settings'){
+  $('#content').innerHTML='<h2 class="page">Settings</h2>'+panel('Administrator Settings',`
+    <p>Signed in as ${session.user.email}</p>
+    <p>Cloud database: Connected to Supabase</p>
+    <p>Role: ${profile.role}</p>
+    <hr>
+    <h3>Change Admin Password</h3>
+    <form id="changePasswordForm">
+      <label>New Password</label>
+      <input id="newAdminPassword" type="password" minlength="10" required placeholder="Enter new password">
+      <label>Confirm New Password</label>
+      <input id="confirmAdminPassword" type="password" minlength="10" required placeholder="Confirm new password">
+      <button type="submit">Update Password</button>
+      <p id="passwordMessage"></p>
+    </form>
+  `);
+
+  $('#changePasswordForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const password=$('#newAdminPassword').value;
+    const confirm=$('#confirmAdminPassword').value;
+    if(password!==confirm){
+      $('#passwordMessage').textContent='Passwords do not match.';
+      return;
+    }
+    const {error}=await sb.auth.updateUser({password});
+    if(error){
+      $('#passwordMessage').textContent=error.message;
+      return;
+    }
+    $('#passwordMessage').textContent='Password updated successfully!';
+    $('#changePasswordForm').reset();
+  });
+}
+}catch(e){$('#content').innerHTML=`<div class="notice">Could not load ${page}: ${e.message}</div>`}}
 async function renderDashboard(){const [bins,reqs,vehicles,locs]=await Promise.all([rows('waste_bins'),rows('pickup_requests'),rows('vehicles'),rows('vehicle_locations')]);$('#content').innerHTML=`<div class="cards"><div class="kpi"><div class="krow"><div class="ki">🗑️</div><div><strong>${bins.length}</strong><small>Total Smart Bins</small></div></div><div class="trend">↑ Cloud synced</div></div><div class="kpi"><div class="krow"><div class="ki">▣</div><div><strong>${reqs.length}</strong><small>Pickup Requests</small></div></div><div class="trend">↑ Cloud synced</div></div><div class="kpi"><div class="krow"><div class="ki">🚚</div><div><strong>${vehicles.length}</strong><small>Collection Vehicles</small></div></div><div class="trend">Live fleet</div></div><div class="kpi"><div class="krow"><div class="ki">✓</div><div><strong>${reqs.filter(x=>x.status==='Collected').length}</strong><small>Collected</small></div></div><div class="trend">From cloud records</div></div></div><div class="grid"><div class="col">${panel('🍃 Waste Distribution',`<div class="dist"><div class="donut"></div><div class="legend"><div>🟢 Organic <b>45%</b></div><div>🔵 Recyclable <b>32%</b></div><div>🔴 E-Waste <b>15%</b></div><div>🟠 Others <b>8%</b></div></div></div>`)}${panel('📊 Bin Status Monitoring',bins.slice(0,5).map(b=>`<div class="row"><b>${esc(b.bin_code)}</b><span>${esc(b.waste_type)}</span><div class="bar"><i style="width:${b.fill_level}%"></i></div><b>${b.fill_level}%</b><span class="tag ${b.status==='Full'?'red':b.status==='Almost Full'?'warn':''}">${esc(b.status)}</span></div>`).join('')||'No bins added yet')}${panel('▤ Recent Pickup Requests',simpleTable(reqs.slice(0,5),['request_code','waste_type','status','created_at']))}</div><div class="col right">${panel('📍 Live Vehicle Tracking <button class="soft" id="viewFullMap">View Full Map →</button>',`<div id="dashMap" class="mapwrap"></div><p class="muted">${locs.length} vehicle location records received</p>`)}${panel('🚚 Collection Vehicles',vehicles.slice(0,4).map(v=>`<p><b>${esc(v.vehicle_code)}</b> · ${esc(v.driver_name||'Driver not assigned')} · ${esc(v.status)}</p>`).join('')||'No vehicles added yet')}</div></div>`;$('#viewFullMap').onclick=()=>{currentPage='Live Map & Tracking';go(currentPage)};setTimeout(()=>makeMap('dashMap',locs,vehicles),80);subscribeLocations(payload => updateVehicleMarker(payload, vehicles));}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
