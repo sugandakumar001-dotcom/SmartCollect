@@ -146,6 +146,71 @@ const $=s=>document.querySelector(s);document.getElementById('mobileMenu').addEv
 const configured=window.SMARTCOLLECT_CONFIG&&window.SMARTCOLLECT_CONFIG.url&&window.SMARTCOLLECT_CONFIG.anonKey&&!window.SMARTCOLLECT_CONFIG.anonKey.includes('PASTE_');
 if(configured&&window.supabase)sb=window.supabase.createClient(window.SMARTCOLLECT_CONFIG.url,window.SMARTCOLLECT_CONFIG.anonKey);
 if(!sb)$('#configWarning').classList.remove('hide');
+
+// Password recovery form
+$('#loginForm').insertAdjacentHTML('afterend', `
+  <form id="passwordRecoveryForm" class="hide">
+    <h3>Set New Admin Password</h3>
+    <label>New Password</label>
+    <input id="newAdminPassword" type="password"
+      placeholder="Enter new password" minlength="8" required>
+
+    <label>Confirm Password</label>
+    <input id="confirmAdminPassword" type="password"
+      placeholder="Confirm new password" minlength="8" required>
+
+    <button type="submit">Update Password</button>
+    <p id="recoveryMessage"></p>
+  </form>
+`);
+
+// Detect Supabase password recovery
+if (sb) {
+  sb.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      $('#loginForm').classList.add('hide');
+      $('#passwordRecoveryForm').classList.remove('hide');
+    }
+  });
+}
+
+// Save the new password
+$('#passwordRecoveryForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const password = $('#newAdminPassword').value;
+  const confirmPassword = $('#confirmAdminPassword').value;
+  const message = $('#recoveryMessage');
+
+  if (password.length < 8) {
+    message.textContent = 'Password must contain at least 8 characters.';
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    message.textContent = 'Passwords do not match.';
+    return;
+  }
+
+  message.textContent = 'Updating password...';
+
+  const { error } = await sb.auth.updateUser({
+    password: password
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  await sb.auth.signOut();
+
+  $('#passwordRecoveryForm').classList.add('hide');
+  $('#loginForm').classList.remove('hide');
+
+  say('Admin password updated successfully! Please sign in.');
+});
+
 function say(msg){$('#authMessage').textContent=msg}
 function clock(){$('#clock').textContent=new Date().toLocaleString([], {weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}clock();setInterval(clock,30000);
 $('#loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!sb)return say('Configure config.js first.');say('Signing in…');const {data,error}=await sb.auth.signInWithPassword({email:$('#email').value,password:$('#password').value});if(error)return say(error.message);session=data.session;await enterApp()});
