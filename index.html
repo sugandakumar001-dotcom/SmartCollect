@@ -1,0 +1,2192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SmartCollect | Connected Waste Management</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--green:#087c3d;--dark:#003b2b;--ink:#14221b;--muted:#66756d;--bg:#edf5f1}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:var(--bg)}button,input{font:inherit}button{cursor:pointer;border:0}
+.shell{min-height:100vh;display:grid;grid-template-columns:245px 1fr}.side{background:linear-gradient(155deg,#075532,#002d22);color:#fff;padding:20px 15px;display:flex;flex-direction:column;min-height:100vh}.brand{text-align:center;padding:5px 4px 25px}.brand .mark{font-size:52px}.brand h1{margin:2px;font-size:29px}.brand h1 span{color:#6ce16c}.brand p{font-size:13px;line-height:1.5;margin:3px;color:#d7f2df}.nav{display:grid;gap:6px}.nav button{background:none;color:#eff9f1;text-align:left;padding:12px;border-radius:13px;font-size:14px}.nav button.active{background:linear-gradient(100deg,#d9f6a8,#5bd354);color:#10351f;font-weight:800}.nav button span{display:inline-block;width:30px;font-size:19px}.sidefoot{margin-top:auto;text-align:center;padding-top:30px;font:italic 21px Georgia;line-height:1.25;color:#d7f2df}
+main{padding:15px;min-width:0;background:linear-gradient(130deg,#f7fbf9,#e8f3ee)}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 7px 14px}.welcome{border-left:3px solid #15553b;padding-left:15px}.welcome h2{font-size:24px;margin:0}.welcome p{margin:1px 0;color:#28583e;font-weight:600;font-size:13px}.topright{display:flex;gap:12px;align-items:center}.date{background:#d8f4e0;padding:9px 14px;border-radius:24px;font-size:12px;font-weight:800}.user{background:white;padding:8px 13px;border-radius:22px;font-weight:750}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-bottom:12px}.kpi{border-radius:21px;padding:14px;min-height:118px;box-shadow:0 3px 10px #17452b12}.kpi:nth-child(1){background:linear-gradient(110deg,#dcf9e5,#b9efcf)}.kpi:nth-child(2){background:linear-gradient(110deg,#e0f0ff,#bedfff)}.kpi:nth-child(3){background:linear-gradient(110deg,#fff1d6,#ffdfa3)}.kpi:nth-child(4){background:linear-gradient(110deg,#f1e1ff,#dbbcff)}.krow{display:flex;gap:12px;align-items:center}.ki{width:56px;height:56px;border-radius:50%;background:#ffffffb8;display:grid;place-items:center;font-size:26px}.kpi strong{font-size:34px;display:block;line-height:1.1}.kpi small{font-size:13px;font-weight:650}.trend{margin-top:8px;font-weight:800;color:#08783b;font-size:13px}
+.grid{display:grid;grid-template-columns:minmax(340px,.95fr) minmax(480px,1.85fr);gap:12px}.col{display:grid;gap:12px;align-content:start}.panel{background:#fff;border:1px solid #e2ebe5;border-radius:20px;padding:13px;box-shadow:0 4px 12px #143e2a12;min-width:0}.head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.head h3{margin:0;font-size:17px}.soft{background:#def8e3;color:#08783b;border-radius:20px;padding:7px 12px;font-size:12px;font-weight:800}.dist{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:8px;min-height:180px}.donut{width:165px;height:165px;border-radius:50%;margin:auto;background:conic-gradient(#22a653 0 45%,#1475e8 45% 77%,#ef3939 77% 92%,#f49a20 92%);display:grid;place-items:center}.donut:after{content:"♻️ 100%";white-space:pre;display:grid;place-items:center;text-align:center;width:82px;height:82px;background:white;border-radius:50%;font-weight:850}.legend{display:grid;gap:12px;font-size:14px}.legend div{display:flex;justify-content:space-between;gap:8px}.legend b{white-space:nowrap}.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px}.row{display:grid;grid-template-columns:68px 1fr 42px 85px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #edf1ee;font-size:12px}.bar{height:10px;background:#e7ece9;border-radius:20px;overflow:hidden}.bar i{display:block;height:100%;background:#168c49;border-radius:20px}.tag{border-radius:20px;padding:4px 7px;background:#e1f7e8;color:#08783b;text-align:center;font-weight:750}.tag.warn{background:#fff0d7;color:#ad6800}.tag.red{background:#ffe1e5;color:#b4233c}
+table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}th{text-align:left;background:#f0f4f2;padding:9px}td{padding:9px;border-bottom:1px solid #edf1ee}.tablewrap{overflow:auto}.mapwrap{height:270px;border-radius:15px;overflow:hidden;background:#dcebd8}.mapwrap #map{height:100%;width:100%}.chart{width:100%;height:160px}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:12px}.banner{border-radius:20px;background:linear-gradient(110deg,#c9f5d2,#e5f8e8);padding:20px;display:flex;justify-content:space-around;align-items:center;color:#15552e;font-weight:850}.banner span{font-size:42px}
+.page{margin:8px 0 13px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolbar input{padding:9px;border:1px solid #d8e2dc;border-radius:9px}.btn{background:#087c3d;color:white;padding:9px 13px;border-radius:9px;font-weight:750}.btn.alt{background:#e0f5e5;color:#08783b}.notice{padding:12px;background:#fff6df;border:1px solid #f2d89d;border-radius:12px;margin:10px 0;font-size:13px}.auth{max-width:440px;margin:8vh auto;background:#fff;padding:25px;border-radius:20px;box-shadow:0 10px 35px #1234}.auth h2{margin-top:0}.auth label{display:grid;gap:6px;margin:12px 0;font-size:13px;font-weight:750}.auth input{padding:11px;border:1px solid #d5e0d9;border-radius:9px}.driverbox{max-width:650px;margin:20px auto}.driverstatus{padding:15px;border-radius:14px;background:#e0f5e5;color:#075a2e;font-weight:750}.muted{color:var(--muted);font-size:13px}.hide{display:none!important}
+@media(max-width:1050px){.shell{grid-template-columns:205px 1fr}.grid{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.shell{display:block}.side{min-height:0;padding:10px}.brand{padding:0 0 10px}.brand .mark{font-size:32px}.brand h1{font-size:22px}.brand p,.sidefoot{display:none}.nav{grid-template-columns:repeat(4,1fr)}.nav button{font-size:0;text-align:center;padding:8px}.nav button span{font-size:20px;width:auto}.top{align-items:flex-start}.date{display:none}.welcome h2{font-size:19px}.cards{gap:7px}.kpi{padding:10px;min-height:100px}.ki{width:42px;height:42px;font-size:20px}.kpi strong{font-size:26px}.kpi small{font-size:11px}.grid{display:flex;flex-direction:column}.right{order:-1}.bottom{grid-template-columns:1fr}.dist{grid-template-columns:1fr 1fr}.donut{width:130px;height:130px}.donut:after{width:66px;height:66px}}
+/* SmartCollect - Mobile Responsive Design */
+
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .sidebar {
+    width: 100%;
+    position: relative;
+    height: auto;
+  }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+    padding: 12px;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .toolbar button,
+  .toolbar select {
+    max-width: 100%;
+  }
+
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    max-width: 100%;
+  }
+
+  #map {
+    width: 100%;
+    height: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 8px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+}
+.mobile-menu {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .mobile-menu {
+    display: block;
+    margin: 8px auto;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #087c3d;
+    color: white;
+    font-weight: bold;
+  }
+
+  .side.menu-open .nav {
+    grid-template-columns: 1fr;
+  }
+
+  .side.menu-open .nav button {
+    font-size: 14px;
+    text-align: left;
+  }
+
+  .side.menu-open .nav button span {
+    font-size: 18px;
+    width: 30px;
+    display: inline-block;
+  }
+}
+/* Mobile table improvements */
+@media (max-width: 700px) {
+  .tablewrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tablewrap table {
+    min-width: 600px;
+  }
+
+  .tablewrap th,
+  .tablewrap td {
+    padding: 10px;
+    white-space: nowrap;
+  }
+}
+</style></head><body>
+<div id="authView" class="auth"><h2>♻️ SmartCollect</h2><p class="muted">Sign in to your connected waste management system.</p><div id="configWarning" class="notice hide">Supabase is not configured yet. Add your project URL and anon key in <b>config.js</b>.</div><form id="loginForm"><label>Email<input id="email" type="email" required placeholder="admin@example.com"></label><label>Password<input id="password" type="password" required placeholder="Password"></label><button class="btn" style="width:100%">Sign in</button></form><p id="authMessage" class="muted"></p></div>
+<div id="appView" class="shell hide"><aside class="side"><div class="brand"><div class="mark">♻️</div><h1>Smart<span>Collect</span><button class="mobile-menu" id="mobileMenu">☰ Menu</button></h1><p>Smart Waste Management<br>for a Greener Tomorrow ♡</p></div><nav class="nav" id="nav"><button class="active" data-page="Dashboard"><span>⌂</span>Dashboard</button><button data-page="Waste Bins"><span>▤</span>Waste Bins</button><button data-page="Pickup Requests"><span>▣</span>Pickup Requests</button><button data-page="Collection Vehicles"><span>🚚</span>Collection Vehicles</button><button data-page="Live Map & Tracking"><span>📍</span>Live Map & Tracking</button><button data-page="Waste Analytics"><span>📊</span>Waste Analytics</button><button data-page="Citizens"><span>♟</span>Citizens</button><button data-page="Notifications"><span>🔔</span>Notifications</button><button data-page="Settings"><span>⚙</span>Settings</button><button data-page="Activity Logs">
+  <span>📋</span>Activity Logs
+</button></nav><div class="sidefoot">Keep Our City<br>Clean & Green ♡</div></aside>
+<main><header class="top"><div class="welcome"><h2 id="welcome">Welcome, Admin! 👋</h2><p>Smart Waste Collection &amp; Segregation System</p></div><div class="topright"><div class="date" id="clock"></div><button class="user" id="notificationBell">
+  🔔 <span id="unreadCount">0</span>
+</button><button class="user" id="userButton">Admin ⌄</button><button class="btn alt" id="logout">Sign out</button></div></header><section id="content"></section></main></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="./config.js"></script>
+<script>
+const $=s=>document.querySelector(s);document.getElementById('mobileMenu').addEventListener('click', () => {
+  document.querySelector('.side').classList.toggle('menu-open');
+});let sb=null,session=null,profile=null,liveSub=null,map=null,watchId=null,simulationTimer=null;
+const configured=window.SMARTCOLLECT_CONFIG&&window.SMARTCOLLECT_CONFIG.url&&window.SMARTCOLLECT_CONFIG.anonKey&&!window.SMARTCOLLECT_CONFIG.anonKey.includes('PASTE_');
+if(configured&&window.supabase)sb=window.supabase.createClient(window.SMARTCOLLECT_CONFIG.url,window.SMARTCOLLECT_CONFIG.anonKey);
+if(!sb)$('#configWarning').classList.remove('hide');
+function say(msg){$('#authMessage').textContent=msg}
+function clock(){$('#clock').textContent=new Date().toLocaleString([], {weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}clock();setInterval(clock,30000);
+$('#loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!sb)return say('Configure config.js first.');say('Signing in…');const {data,error}=await sb.auth.signInWithPassword({email:$('#email').value,password:$('#password').value});if(error)return say(error.message);session=data.session;await enterApp()});
+$('#notificationBell').onclick = () => {
+  go('Notifications');
+};
+$('#logout').onclick=async()=>{if(watchId!==null)navigator.geolocation.clearWatch(watchId);if(sb)await sb.auth.signOut();location.reload()};
+async function enterApp(){const {data,error}=await sb.from('profiles').select('*').eq('id',session.user.id).single();if(error||!data){say('No profile found. Ask your administrator to create your profile in Supabase.');await sb.auth.signOut();return}
+profile=data;
+await updateNotificationCount();
+subscribeNotifications();
+$('#authView').classList.add('hide');
+$('#appView').classList.remove('hide');
+$('#welcome').textContent=`Welcome, ${profile.display_name||profile.role}! 👋`;
+$('#userButton').textContent=(profile.display_name||profile.role)+' ⌄';
+if(profile.role==='driver'){
+    renderDriver();
+    return;
+}
+go('Dashboard')}
+
+async function rows(table) {
+  const { data, error } = await sb
+    .from(table)
+    .select('*')
+    .order(
+      table === 'vehicle_locations' || table === 'vehicle_route_history'
+        ? 'recorded_at'
+        : 'created_at',
+      { ascending: false }
+    )
+    .limit(300);
+
+  if (error) throw error;
+  return data || [];
+}
+async function updateNotificationCount() {
+  const { count, error } = await sb
+    .from('notifications')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_read', false);
+
+  if (error) {
+    console.error(error.message);
+    return;
+  }
+
+  const badge = document.getElementById('unreadCount');
+  if (badge) badge.textContent = count || 0;
+}
+
+let notificationSub = null;
+
+function subscribeNotifications() {
+  if (notificationSub) {
+    sb.removeChannel(notificationSub);
+  }
+
+  notificationSub = sb
+    .channel('notification-live')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'notifications'
+      },
+      async () => {
+        await updateNotificationCount();
+
+        if (document.getElementById('notificationList')) {
+          await renderNotifications();
+        }
+      }
+    )
+    .subscribe();
+}
+
+async function createNotification(title, message, requestId = null) {
+  const { error } = await sb
+    .from('notifications')
+    .insert([{
+      title,
+      message,
+      request_id: requestId
+    }]);
+
+  if (error) {
+    console.error('Notification error:', error.message);
+  }
+}
+
+async function renderNotifications() {
+  const { data, error } = await sb
+    .from('notifications')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  const unread = (data || []).filter(n => !n.is_read).length;
+
+  $('#content').innerHTML = `
+    <h2 class="page">🔔 Notifications</h2>
+    <section class="panel">
+      <h3>${unread} Unread Notifications</h3>
+      <div id="notificationList">
+        ${(data || []).map(n => `
+          <div class="panel">
+            <h3>${esc(n.title)}</h3>
+            <p>${esc(n.message)}</p>
+            <p class="muted">${new Date(n.created_at).toLocaleString()}</p>
+            ${n.is_read ? '<span class="tag">Read</span>' : `
+              <button class="btn mark-read"
+                data-id="${esc(n.id)}">Mark as Read</button>
+            `}
+          </div>
+        `).join('') || '<p>No notifications yet.</p>'}
+      </div>
+    </section>
+  `;
+
+  $('#notificationList').addEventListener('click', async e => {
+    const button = e.target.closest('.mark-read');
+    if (!button) return;
+
+    const { error } = await sb
+      .from('notifications')
+      .update({ is_read: true })
+      .eq('id', button.dataset.id);
+
+    if (error) {
+      alert('Could not mark notification as read: ' + error.message);
+      return;
+    }
+
+    await renderNotifications();
+    await updateNotificationCount();
+  });
+}
+function panel(title,body,action=''){return `<section class="panel"><div class="head"><h3>${title}</h3>${action}</div>${body}</section>`}
+
+async function renderActivityLogs() {
+  const content = $('#content');
+
+  content.innerHTML = `
+    <div class="page">
+      <h2>📋 Activity Logs</h2>
+      <p>Track all activities performed in SmartCollect.</p>
+      <button class="btn" id="refreshActivityLogs">
+        Refresh Logs
+      </button>
+      <button class="btn" id="exportActivityLogs">
+  ⬇ Export CSV
+</button>
+      <div class="toolbar" style="margin:12px 0;display:flex;gap:8px;flex-wrap:wrap;">
+  <input
+    type="search"
+    id="activitySearch"
+    placeholder="Search activity logs..."
+  >
+
+  <select id="activityActionFilter">
+    <option value="">All Actions</option>
+    <option value="Created">Created</option>
+    <option value="Updated">Updated</option>
+    <option value="Deleted">Deleted</option>
+  </select>
+
+  <select id="activityTypeFilter">
+    <option value="">All Types</option>
+    <option value="Waste Bin">Waste Bin</option>
+    <option value="Pickup Request">Pickup Request</option>
+    <option value="Collection Vehicle">Collection Vehicle</option>
+    <option value="Citizen">Citizen</option>
+  </select>
+</div>
+      <div id="activityLogTable" class="panel">
+        Loading activity logs...
+      </div>
+    </div>
+  `;
+
+  async function loadLogs() {
+    const table = $('#activityLogTable');
+
+    table.innerHTML = 'Loading activity logs...';
+
+    const { data, error } = await sb
+      .from('activity_logs')
+      .select('*')
+      .order('id', { ascending: false })
+      .limit(200);
+
+    if (error) {
+      table.innerHTML = `
+        <p class="notice">Error: ${esc(error.message)}</p>
+      `;
+      return;
+    }
+
+    const searchTerm = $('#activitySearch').value.toLowerCase();
+const actionFilter = $('#activityActionFilter').value;
+const typeFilter = $('#activityTypeFilter').value;
+
+const filteredData = (data || []).filter(log => {
+  const matchesSearch =
+    (log.actor_name || '').toLowerCase().includes(searchTerm) ||
+    (log.action || '').toLowerCase().includes(searchTerm) ||
+    (log.entity_type || '').toLowerCase().includes(searchTerm) ||
+    (log.entity_id || '').toLowerCase().includes(searchTerm);
+
+  const matchesAction =
+    !actionFilter || log.action === actionFilter;
+
+  const matchesType =
+    !typeFilter || log.entity_type === typeFilter;
+
+  return matchesSearch && matchesAction && matchesType;
+});
+
+if (filteredData.length === 0) {
+  table.innerHTML = '<p>No matching activity logs found.</p>';
+  return;
+}
+window.activityLogExportData = filteredData;
+
+    table.innerHTML = simpleTable(filteredData, [
+      'actor_name',
+      'action',
+      'entity_type',
+      'entity_id'
+    ]);
+  }
+
+  $('#refreshActivityLogs').onclick = loadLogs;
+  $('#exportActivityLogs').onclick = () => {
+  const logs = window.activityLogExportData || [];
+
+  if (logs.length === 0) {
+    alert('No activity logs to export.');
+    return;
+  }
+
+  const headers = [
+    'Actor Name',
+    'Action',
+    'Entity Type',
+    'Entity ID'
+  ];
+
+  const csvRows = [
+    headers.join(','),
+    ...logs.map(log =>
+      [
+        log.actor_name,
+        log.action,
+        log.entity_type,
+        log.entity_id
+      ].map(value =>
+        `"${String(value ?? '').replace(/"/g, '""')}"`
+      ).join(',')
+    )
+  ];
+
+  const blob = new Blob(
+    [csvRows.join('\n')],
+    { type: 'text/csv;charset=utf-8;' }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = 'SmartCollect_Activity_Logs.csv';
+  link.click();
+
+  URL.revokeObjectURL(url);
+};
+
+  $('#activitySearch').addEventListener('input', loadLogs);
+
+  $('#activityActionFilter').addEventListener('change', loadLogs);
+
+  $('#activityTypeFilter').addEventListener('change', loadLogs); 
+
+  await loadLogs();
+}
+
+async function go(page){if(profile.role!=='admin')return;document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('#content').innerHTML='<div class="panel">Loading cloud data…</div>';try{if(page==='Dashboard')await renderDashboard();else if(page==='Live Map & Tracking')await renderMapPage();else if(page==='Waste Bins')await renderTablePage(page,'waste_bins',['bin_code','waste_type','fill_level','status']);else if(page==='Pickup Requests')await renderTablePage(page,'pickup_requests',['request_code','citizen_name','phone','pickup_address','waste_type','status','created_at']);else if(page==='Collection Vehicles')await renderTablePage(page,'vehicles',['vehicle_code','driver_name','route_name','status']);else if(page==='Citizens')await renderTablePage(page,'citizens',['full_name','area','phone']);else if(page==='Waste Analytics')await renderAnalytics();else if(page==='Notifications') await renderNotifications();else if(page==='Activity Logs') await renderActivityLogs();else if(page==='Settings')$('#content').innerHTML='<h2 class="page">Settings</h2>'+panel('Administrator Settings',`<p>Signed in as ${session.user.email}</p><p>Cloud database: Connected to Supabase</p><p>Role: ${profile.role}</p>`)}catch(e){$('#content').innerHTML=`<div class="notice">Could not load ${page}: ${e.message}</div>`}}
+async function renderDashboard(){const [bins,reqs,vehicles,locs]=await Promise.all([rows('waste_bins'),rows('pickup_requests'),rows('vehicles'),rows('vehicle_locations')]);$('#content').innerHTML=`<div class="cards"><div class="kpi"><div class="krow"><div class="ki">🗑️</div><div><strong>${bins.length}</strong><small>Total Smart Bins</small></div></div><div class="trend">↑ Cloud synced</div></div><div class="kpi"><div class="krow"><div class="ki">▣</div><div><strong>${reqs.length}</strong><small>Pickup Requests</small></div></div><div class="trend">↑ Cloud synced</div></div><div class="kpi"><div class="krow"><div class="ki">🚚</div><div><strong>${vehicles.length}</strong><small>Collection Vehicles</small></div></div><div class="trend">Live fleet</div></div><div class="kpi"><div class="krow"><div class="ki">✓</div><div><strong>${reqs.filter(x=>x.status==='Collected').length}</strong><small>Collected</small></div></div><div class="trend">From cloud records</div></div></div><div class="grid"><div class="col">${panel('🍃 Waste Distribution',`<div class="dist"><div class="donut"></div><div class="legend"><div>🟢 Organic <b>45%</b></div><div>🔵 Recyclable <b>32%</b></div><div>🔴 E-Waste <b>15%</b></div><div>🟠 Others <b>8%</b></div></div></div>`)}${panel('📊 Bin Status Monitoring',bins.slice(0,5).map(b=>`<div class="row"><b>${esc(b.bin_code)}</b><span>${esc(b.waste_type)}</span><div class="bar"><i style="width:${b.fill_level}%"></i></div><b>${b.fill_level}%</b><span class="tag ${b.status==='Full'?'red':b.status==='Almost Full'?'warn':''}">${esc(b.status)}</span></div>`).join('')||'No bins added yet')}${panel('▤ Recent Pickup Requests',simpleTable(reqs.slice(0,5),['request_code','waste_type','status','created_at']))}</div><div class="col right">${panel('📍 Live Vehicle Tracking <button class="soft" id="viewFullMap">View Full Map →</button>',`<div id="dashMap" class="mapwrap"></div><p class="muted">${locs.length} vehicle location records received</p>`)}${panel('🚚 Collection Vehicles',vehicles.slice(0,4).map(v=>`<p><b>${esc(v.vehicle_code)}</b> · ${esc(v.driver_name||'Driver not assigned')} · ${esc(v.status)}</p>`).join('')||'No vehicles added yet')}</div></div>`;$('#viewFullMap').onclick=()=>{currentPage='Live Map & Tracking';go(currentPage)};setTimeout(()=>makeMap('dashMap',locs,vehicles),80);subscribeLocations(payload => updateVehicleMarker(payload, vehicles));}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+
+
+function simpleTable(items, keys, actionType = '') {
+  const showActions = actionType && profile?.role === 'admin';
+
+  return `
+    <div class="tablewrap" style="width:100%; max-width:100%; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch;">
+  <table style="min-width:600px; width:max-content;">
+        <thead>
+          <tr>
+            ${keys.map(k => `<th>${k.replaceAll('_',' ')}</th>`).join('')}
+            ${showActions ? '<th>Actions</th>' : ''}
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map(x => `
+            <tr>
+              ${keys.map(k => `<td>${esc(x[k])}</td>`).join('')}
+
+              ${showActions ? `
+                <td>
+                  ${actionType === 'bins' ? `
+                    <button type="button" class="edit-bin-btn"
+                      data-bin-id="${esc(x.id)}">Edit</button>
+                    <button type="button" class="delete-bin-btn"
+                      data-bin-id="${esc(x.id)}">Delete</button>
+                  ` : ''}
+
+                  ${actionType === 'requests' ? `
+                    <button type="button" class="edit-request-btn"
+                      data-request-id="${esc(x.id)}">Edit</button>
+                    <button type="button" class="delete-request-btn"
+                      data-request-id="${esc(x.id)}">Delete</button>
+                    <select class="request-status-select"
+                      data-request-id="${esc(x.id)}">
+                      <option value="Pending" ${x.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                      <option value="Approved" ${x.status === 'Approved' ? 'selected' : ''}>Approved</option>
+                      <option value="Collected" ${x.status === 'Collected' ? 'selected' : ''}>Collected</option>
+                    </select>
+                  ` : ''}
+
+                  ${actionType === 'vehicles' ? `
+                    <button type="button" class="edit-vehicle-btn"
+                      data-vehicle-code="${esc(x.vehicle_code)}">Edit</button>
+                    <button type="button" class="delete-vehicle-btn"
+                      data-vehicle-code="${esc(x.vehicle_code)}">Delete</button>
+                  ` : ''}
+
+                  ${actionType === 'citizens' ? `
+                    <button type="button" class="edit-citizen-btn"
+                      data-citizen-id="${esc(x.id)}">Edit</button>
+                    <button type="button" class="delete-citizen-btn"
+                      data-citizen-id="${esc(x.id)}">Delete</button>
+                  ` : ''}
+                </td>
+              ` : ''}
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+
+
+
+async function renderTablePage(title, table, keys) {
+  const items = await rows(table);
+
+  // ADD WASTE BIN FORM
+  const addBinForm = table === 'waste_bins' ? `
+    <h3>Add New Waste Bin</h3>
+    <form id="addBinForm" class="toolbar">
+      <input id="binCode" placeholder="Bin Code" required>
+
+      <select id="wasteType" required>
+        <option value="">Select Waste Type</option>
+        <option value="General">General</option>
+        <option value="Plastic">Plastic</option>
+        <option value="Paper">Paper</option>
+        <option value="Organic">Organic</option>
+        <option value="Metal">Metal</option>
+        <option value="Glass">Glass</option>
+      </select>
+
+      <input id="fillLevel" type="number" min="0" max="100"
+        placeholder="Fill Level (%)" value="0" required>
+
+      <select id="binStatus" required>
+        <option value="Active">Active</option>
+        <option value="Full">Full</option>
+        <option value="Maintenance">Maintenance</option>
+      </select>
+
+      <button type="submit">Add Bin</button>
+    </form>
+    <p id="binMessage"></p>
+  ` : '';
+
+  // ADD PICKUP REQUEST FORM
+ const addRequestForm = table === 'pickup_requests' ? `
+  <h3>Add New Pickup Request</h3>
+  <form id="addRequestForm" class="toolbar">
+    <input id="requestCode" placeholder="Request Code" required>
+    <input id="citizenName" placeholder="Citizen Name" required>
+    <input id="requestPhone" type="tel" placeholder="Phone Number" required>
+    <input id="pickupAddress" placeholder="Pickup Address" required>
+
+    <select id="requestWasteType" required>
+      <option value="">Select Waste Type</option>
+      <option value="General">General</option>
+      <option value="Plastic">Plastic</option>
+      <option value="Paper">Paper</option>
+      <option value="Organic">Organic</option>
+      <option value="Metal">Metal</option>
+      <option value="Glass">Glass</option>
+    </select>
+
+    <select id="requestStatus" required>
+      <option value="Pending">Pending</option>
+      <option value="Approved">Approved</option>
+      <option value="Collected">Collected</option>
+    </select>
+
+    <select id="requestVehicleId" required>
+      <option value="">Select Vehicle</option>
+    </select>
+
+    <button type="submit">Add Request</button>
+  </form>
+  <p id="requestMessage"></p>
+` : '';
+
+  // ADD COLLECTION VEHICLE FORM
+  const addVehicleForm = table === 'vehicles' ? `
+    <h3>Add New Collection Vehicle</h3>
+    <form id="addVehicleForm" class="toolbar">
+      <input id="vehicleCode" placeholder="Vehicle Code (TN-02)" required>
+      <input id="vehicleDriver" placeholder="Driver Name" required>
+      <input id="vehicleRoute" placeholder="Route Name" required>
+
+      <select id="vehicleStatus" required>
+        <option value="Available">Available</option>
+        <option value="On Route">On Route</option>
+        <option value="Maintenance">Maintenance</option>
+      </select>
+
+      <button type="submit">Add Vehicle</button>
+    </form>
+    <p id="vehicleMessage"></p>
+  ` : '';
+
+  // ADD CITIZEN FORM
+  const addCitizenForm = table === 'citizens' ? `
+    <h3>Add New Citizen</h3>
+
+    <form id="addCitizenForm" class="toolbar">
+      <input id="citizenFullName"
+        placeholder="Full Name" required>
+
+      <input id="citizenArea"
+        placeholder="Area" required>
+
+      <input id="citizenPhone"
+        type="tel"
+        placeholder="Phone Number"
+        required>
+
+      <button type="submit">Add Citizen</button>
+    </form>
+
+    <p id="citizenMessage"></p>
+  ` : '';
+
+
+  // DISPLAY PAGE
+  $('#content').innerHTML = `
+  
+    <h2 class="page">${title}</h2>
+    <section class="panel">
+      ${addBinForm}
+      ${addRequestForm}
+      ${addVehicleForm}
+      ${addCitizenForm}
+
+      <div class="toolbar">
+        <input id="filter" placeholder="Search ${title}…"
+          oninput="filterTable()">
+      </div>
+
+      <div id="tableOut">
+        ${simpleTable(
+          items,
+          keys,
+          table === 'waste_bins' ? 'bins' :
+          table === 'pickup_requests' ? 'requests' :
+          table === 'vehicles' ? 'vehicles' :
+          table === 'citizens' ? 'citizens' : ''
+        )}
+      </div>
+    </section>
+  `;
+  if (table === 'pickup_requests') {
+  const vehicleSelect = document.getElementById('requestVehicleId');
+
+  const { data: vehicles, error } = await sb
+    .from('vehicles')
+    .select('vehicle_code, driver_name')
+    .order('vehicle_code');
+
+  if (error) {
+    console.error('Vehicle loading error:', error);
+  } else {
+    vehicles.forEach(vehicle => {
+      const option = document.createElement('option');
+      option.value = vehicle.vehicle_code;
+      option.textContent = `${vehicle.vehicle_code} - ${vehicle.driver_name}`;
+      vehicleSelect.appendChild(option);
+    });
+  }
+}
+
+  // TABLE ACTION BUTTONS
+  const tableOut = $('#tableOut');
+
+  tableOut.addEventListener('click', async function(e) {
+    const editBin = e.target.closest('.edit-bin-btn');
+    const deleteBinBtn = e.target.closest('.delete-bin-btn');
+    const editRequest = e.target.closest('.edit-request-btn');
+    const deleteRequestBtn = e.target.closest('.delete-request-btn');
+    const editVehicle = e.target.closest('.edit-vehicle-btn');
+    const deleteVehicleBtn = e.target.closest('.delete-vehicle-btn');
+    const editCitizen = e.target.closest('.edit-citizen-btn');
+    const deleteCitizenBtn = e.target.closest('.delete-citizen-btn');
+
+    if (editCitizen) await window.editCitizen(editCitizen.dataset.citizenId);
+    if (deleteCitizenBtn) await window.deleteCitizen(deleteCitizenBtn.dataset.citizenId);
+
+    if (editBin) await window.editBin(editBin.dataset.binId);
+    if (deleteBinBtn) await window.deleteBin(deleteBinBtn.dataset.binId);
+
+    if (editRequest) await window.editRequest(editRequest.dataset.requestId);
+    if (deleteRequestBtn) await window.deleteRequest(deleteRequestBtn.dataset.requestId);
+
+    if (editVehicle) await window.editVehicle(editVehicle.dataset.vehicleCode);
+    if (deleteVehicleBtn) await window.deleteVehicle(deleteVehicleBtn.dataset.vehicleCode);
+  });
+
+  // PICKUP REQUEST STATUS CHANGE
+  tableOut.addEventListener('change', async function(e) {
+    const statusSelect = e.target.closest('.request-status-select');
+
+    if (statusSelect) {
+      await window.updateRequestStatus(
+        statusSelect.dataset.requestId,
+        statusSelect.value
+      );
+    }
+    
+  });
+
+  // ADD WASTE BIN
+  const form = $('#addBinForm');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const bin = {
+        bin_code: $('#binCode').value.trim(),
+        waste_type: $('#wasteType').value,
+        fill_level: Number($('#fillLevel').value),
+        status: $('#binStatus').value
+      };
+
+      const message = $('#binMessage');
+      const button = form.querySelector('button[type="submit"]');
+
+      button.disabled = true;
+      message.textContent = 'Saving bin...';
+
+      const { error } = await sb.from('waste_bins').insert([bin]);
+
+      if (error) {
+        message.textContent = 'Error: ' + error.message;
+        button.disabled = false;
+        return;
+      }
+      // Save admin activity
+const { error: logError } = await sb.from('activity_logs').insert({
+  actor_id: session.user.id,
+  actor_name: profile?.display_name || 'Admin',
+  action: 'Created',
+  entity_type: 'Waste Bin',
+  entity_id: bin.bin_code,
+  details: {
+    waste_type: bin.waste_type,
+    fill_level: bin.fill_level
+  }
+});
+
+if (logError) {
+  console.error('Activity log error:', logError.message);
+}
+      alert('Waste bin added successfully!');
+      await renderTablePage(title, table, keys);
+    });
+  }
+
+  // ADD PICKUP REQUEST
+  const requestForm = $('#addRequestForm');
+
+if (requestForm) {
+  requestForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const request = {
+      request_code: $('#requestCode').value.trim(),
+      citizen_name: $('#citizenName').value.trim(),
+      phone: $('#requestPhone').value.trim(),
+      pickup_address: $('#pickupAddress').value.trim(),
+      waste_type: $('#requestWasteType').value,
+      status: $('#requestStatus').value,
+      vehicle_id: $('#requestVehicleId').value
+    };
+
+    const message = $('#requestMessage');
+    const button = requestForm.querySelector('button[type="submit"]');
+
+    button.disabled = true;
+    message.textContent = 'Saving request...';
+
+    const { data: newRequest, error } = await sb
+  .from('pickup_requests')
+  .insert([request])
+  .select('id, request_code')
+  .single();
+
+    if (error) {
+      message.textContent = 'Error: ' + error.message;
+      button.disabled = false;
+      return;
+    }
+
+    alert('Pickup request added successfully!');
+    await createNotification(
+  'New Pickup Request',
+  `Request ${newRequest.request_code} has been created.`,
+  newRequest.id
+);
+// Save pickup request activity
+const { error: requestLogError } = await sb
+  .from('activity_logs')
+  .insert({
+    actor_id: session.user.id,
+    actor_name: profile?.display_name || 'Admin',
+    action: 'Created',
+    entity_type: 'Pickup Request',
+    entity_id: newRequest.request_code,
+    details: {
+      waste_type: request.waste_type,
+      pickup_address: request.pickup_address
+    }
+  });
+
+if (requestLogError) {
+  console.error('Request activity log error:', requestLogError.message);
+}
+console.log('Pickup activity log result:', requestLogError);
+await renderTablePage(title, table, keys);
+  });
+}
+
+  // ADD COLLECTION VEHICLE
+  const vehicleForm = $('#addVehicleForm');
+
+  if (vehicleForm) {
+    vehicleForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const vehicle = {
+        vehicle_code: $('#vehicleCode').value.trim(),
+        driver_name: $('#vehicleDriver').value.trim(),
+        route_name: $('#vehicleRoute').value.trim(),
+        status: $('#vehicleStatus').value
+      };
+
+      const message = $('#vehicleMessage');
+      const button = vehicleForm.querySelector('button[type="submit"]');
+
+      button.disabled = true;
+      message.textContent = 'Saving vehicle...';
+
+      const { error } = await sb
+        .from('vehicles')
+        .insert([vehicle]);
+
+      if (error) {
+        message.textContent = 'Error: ' + error.message;
+        button.disabled = false;
+        return;
+      }
+
+
+      // Save collection vehicle activity
+    const { error: vehicleLogError } = await sb
+    .from('activity_logs')
+    .insert({
+    actor_id: session.user.id,
+    actor_name: profile?.display_name || 'Admin',
+    action: 'Created',
+    entity_type: 'Collection Vehicle',
+    entity_id: vehicle.vehicle_code,
+    details: {
+      driver_name: vehicle.driver_name,
+      route_name: vehicle.route_name
+    }
+  });
+
+if (vehicleLogError) {
+  console.error('Vehicle activity log error:', vehicleLogError.message);
+}
+      alert('Vehicle added successfully!');
+      await renderTablePage(title, table, keys);
+    });
+  }
+
+  // ADD CITIZEN
+  const citizenForm = $('#addCitizenForm');
+
+  if (citizenForm) {
+    citizenForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const citizen = {
+        full_name: $('#citizenFullName').value.trim(),
+        area: $('#citizenArea').value.trim(),
+        phone: $('#citizenPhone').value.trim()
+      };
+
+      const message = $('#citizenMessage');
+      const button = citizenForm.querySelector('button[type="submit"]');
+
+      button.disabled = true;
+      message.textContent = 'Saving citizen...';
+
+     const { data: newCitizen, error } = await sb
+  .from('citizens')
+  .insert([citizen])
+  .select('id')
+  .single();
+
+if (error) {
+  message.textContent = 'Error: ' + error.message;
+  button.disabled = false;
+  return;
+}
+
+// Save citizen activity
+const { error: citizenLogError } = await sb
+  .from('activity_logs')
+  .insert({
+    actor_id: session.user.id,
+    actor_name: profile?.display_name || 'Admin',
+    action: 'Created',
+    entity_type: 'Citizen',
+    entity_id: String(newCitizen.id),
+    details: {
+      full_name: citizen.full_name,
+      area: citizen.area
+    }
+  });
+
+if (citizenLogError) {
+  console.error('Citizen activity log error:', citizenLogError.message);
+}
+      if (error) {
+        message.textContent = 'Error: ' + error.message;
+        button.disabled = false;
+        return;
+      }
+
+      alert('Citizen added successfully!');
+      await renderTablePage(title, table, keys);
+    });
+  }
+
+}
+
+
+
+function filterTable() {
+  let q = $('#filter').value.toLowerCase();
+  $('#tableOut').querySelectorAll('tbody tr').forEach(tr =>
+    tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none'
+  );
+}
+window.deleteBin = async function(id) {
+  if (!confirm('Are you sure you want to delete this bin?')) return;
+
+  // Get bin details before deleting
+  const { data: bin } = await sb
+    .from('waste_bins')
+    .select('bin_code')
+    .eq('id', id)
+    .single();
+
+  const { error } = await sb
+    .from('waste_bins')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  // Save activity log
+  const { error: logError } = await sb
+    .from('activity_logs')
+    .insert({
+      actor_id: session.user.id,
+      actor_name: profile?.display_name || 'Admin',
+      action: 'Deleted',
+      entity_type: 'Waste Bin',
+      entity_id: String(id),
+      details: {
+        bin_code: bin?.bin_code || 'Unknown'
+      }
+    });
+
+  if (logError) {
+    console.error('Delete activity log failed:', logError);
+    alert('Bin deleted, but activity log failed: ' + logError.message);
+  } else {
+    alert('Bin deleted and activity logged successfully!');
+  }
+
+  await renderTablePage(
+    'Waste Bins',
+    'waste_bins',
+    ['bin_code', 'waste_type', 'fill_level', 'status']
+  );
+};
+window.editBin = async function(id) {
+  const { data: bin, error: loadError } = await sb
+    .from('waste_bins')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (loadError) {
+    alert(loadError.message);
+    return;
+  }
+
+  const binCode = prompt('Enter Bin Code:', bin.bin_code);
+  if (binCode === null) return;
+
+  const wasteType = prompt('Enter Waste Type:', bin.waste_type);
+  if (wasteType === null) return;
+
+  const fillLevel = prompt('Enter Fill Level (0-100):', bin.fill_level);
+  if (fillLevel === null) return
+
+  const status = prompt('Enter Status:', bin.status);
+  if (status === null) return;
+
+  if (!binCode.trim() || !wasteType.trim() ||
+      fillLevel.trim() === '' ||
+      !Number.isFinite(Number(fillLevel)) ||
+      Number(fillLevel) < 0 || Number(fillLevel) > 100 ||
+      !status.trim()) {
+    alert('Please enter valid bin details. Fill level must be between 0 and 100.');
+    return;
+  }
+
+  const { error } = await sb
+    .from('waste_bins')
+    .update({
+      bin_code: binCode.trim(),
+      waste_type: wasteType.trim(),
+      fill_level: Number(fillLevel),
+      status: status.trim()
+    })
+    .eq('id', id);
+
+  if (error) {
+    alert('Update failed: ' + error.message);
+    return;
+  }
+  
+
+
+
+  alert('Bin updated successfully!');
+
+  await renderTablePage(
+    'Waste Bins',
+    'waste_bins',
+    ['bin_code', 'waste_type', 'fill_level', 'status']
+  );
+};
+
+
+
+window.editRequest = async function(id) {
+  const { data: request, error: loadError } = await sb
+    .from('pickup_requests')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (loadError) {
+    alert(loadError.message);
+    return;
+  }
+
+  const code = prompt('Request Code:', request.request_code);
+  if (code === null) return;
+
+  const name = prompt('Citizen Name:', request.citizen_name || '');
+  if (name === null) return;
+
+  const phone = prompt('Phone Number:', request.phone || '');
+  if (phone === null) return;
+
+  const address = prompt('Pickup Address:', request.pickup_address || '');
+  if (address === null) return;
+
+  const waste = prompt('Waste Type:', request.waste_type);
+  if (waste === null) return;
+
+  if (!code.trim() || !name.trim() || !phone.trim() ||
+      !address.trim() || !waste.trim()) {
+    alert('Please fill in all fields.');
+    return;
+  }
+
+  const { error } = await sb
+    .from('pickup_requests')
+    .update({
+      request_code: code.trim(),
+      citizen_name: name.trim(),
+      phone: phone.trim(),
+      pickup_address: address.trim(),
+      waste_type: waste.trim()
+    })
+    .eq('id', id);
+
+  if (error) {
+    alert('Update failed: ' + error.message);
+    return;
+  }
+
+  alert('Pickup request updated successfully!');
+
+  await renderTablePage(
+    'Pickup Requests',
+    'pickup_requests',
+    ['request_code', 'citizen_name', 'phone',
+     'pickup_address', 'waste_type', 'status', 'created_at']
+  );
+};
+
+
+
+window.deleteRequest = async function(id) {
+  if (!confirm('Are you sure you want to delete this pickup request?')) {
+    return;
+  }
+
+  // Get request details before deletion
+  const { data: request } = await sb
+    .from('pickup_requests')
+    .select('request_code')
+    .eq('id', id)
+    .single();
+
+  const { error } = await sb
+    .from('pickup_requests')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    alert('Delete failed: ' + error.message);
+    return;
+  }
+
+  // Save activity log
+  const { error: logError } = await sb
+    .from('activity_logs')
+    .insert({
+      actor_id: session.user.id,
+      actor_name: profile?.display_name || 'Admin',
+      action: 'Deleted',
+      entity_type: 'Pickup Request',
+      entity_id: String(id),
+      details: {
+        request_code: request?.request_code || 'Unknown'
+      }
+    });
+
+  if (logError) {
+    console.error('Request activity log failed:', logError.message);
+    alert('Request deleted, but activity log failed: ' + logError.message);
+  } else {
+    alert('Pickup request deleted and activity logged successfully!');
+  }
+
+  await renderTablePage(
+    'Pickup Requests',
+    'pickup_requests',
+    ['request_code', 'citizen_name', 'phone',
+     'pickup_address', 'waste_type', 'status', 'created_at']
+  );
+};
+
+
+
+
+window.updateRequestStatus = async function(id, status) {
+
+  const { error } = await sb
+    .from('pickup_requests')
+    .update({ status: status })
+    .eq('id', id);
+
+  if (error) {
+    alert('Status update failed: ' + error.message);
+    return;
+  }
+
+  const { data: request } = await sb
+    .from('pickup_requests')
+    .select('request_code')
+    .eq('id', id)
+    .single();
+
+  await createNotification(
+    'Pickup Request Updated',
+    `Request ${request?.request_code || id} status changed to ${status}.`,
+    id
+  );
+
+  alert('Request status updated to ' + status + '!');
+
+  await renderTablePage(
+    'Pickup Requests',
+    'pickup_requests',
+    ['request_code', 'citizen_name', 'phone',
+     'pickup_address', 'waste_type', 'status', 'created_at']
+  );
+};
+
+
+window.editVehicle = async function(code) {
+  const { data: vehicle, error } = await sb
+    .from('vehicles')
+    .select('*')
+    .eq('vehicle_code', code)
+    .single();
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  const driver = prompt('Driver Name:', vehicle.driver_name || '');
+  if (driver === null) return;
+
+  const route = prompt('Route Name:', vehicle.route_name || '');
+  if (route === null) return;
+
+  const status = prompt('Vehicle Status:', vehicle.status || '');
+  if (status === null) return;
+
+  if (!driver.trim() || !route.trim() || !status.trim()) {
+    alert('Please fill in all fields.');
+    return;
+  }
+
+  const { error: updateError } = await sb
+    .from('vehicles')
+    .update({
+      driver_name: driver.trim(),
+      route_name: route.trim(),
+      status: status.trim()
+    })
+    .eq('vehicle_code', code);
+
+  if (updateError) {
+    alert(updateError.message);
+    return;
+  }
+
+  alert('Vehicle updated successfully!');
+
+  await renderTablePage(
+    'Collection Vehicles',
+    'vehicles',
+    ['vehicle_code', 'driver_name', 'route_name', 'status']
+  );
+};
+
+window.deleteVehicle = async function(code) {
+  if (!confirm('Are you sure you want to delete vehicle ' + code + '?')) {
+    return;
+  }
+
+  const { error } = await sb
+    .from('vehicles')
+    .delete()
+    .eq('vehicle_code', code);
+
+  if (error) {
+    alert('Delete failed: ' + error.message);
+    return;
+  }
+
+  alert('Vehicle deleted successfully!');
+
+  await renderTablePage(
+    'Collection Vehicles',
+    'vehicles',
+    ['vehicle_code', 'driver_name', 'route_name', 'status']
+  );
+};
+// EDIT CITIZEN
+window.editCitizen = async function(id) {
+  const { data: citizen, error: fetchError } = await sb
+    .from('citizens')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (fetchError) {
+    alert('Error: ' + fetchError.message);
+    return;
+  }
+
+  const full_name = prompt('Citizen Name:', citizen.full_name);
+  if (full_name === null) return;
+
+  const area = prompt('Area:', citizen.area);
+  if (area === null) return;
+
+  const phone = prompt('Phone Number:', citizen.phone);
+  if (phone === null) return;
+
+  const { error } = await sb
+    .from('citizens')
+    .update({
+      full_name: full_name.trim(),
+      area: area.trim(),
+      phone: phone.trim()
+    })
+    .eq('id', id);
+
+  if (error) {
+    alert('Update failed: ' + error.message);
+    return;
+  }
+
+  alert('Citizen updated successfully!');
+
+  await renderTablePage(
+    'Citizens',
+    'citizens',
+    ['full_name', 'area', 'phone']
+  );
+};
+
+
+// DELETE CITIZEN
+window.deleteCitizen = async function(id) {
+  if (!confirm('Are you sure you want to delete this citizen?')) {
+    return;
+  }
+
+  const { error } = await sb
+    .from('citizens')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    alert('Delete failed: ' + error.message);
+    return;
+  }
+
+  alert('Citizen deleted successfully!');
+
+  await renderTablePage(
+    'Citizens',
+    'citizens',
+    ['full_name', 'area', 'phone']
+  );
+};
+
+
+function filterTable(){let q=$('#filter').value.toLowerCase();$('#tableOut').querySelectorAll('tbody tr').forEach(tr=>tr.style.display=tr.innerText.toLowerCase().includes(q)?'':'none')}
+
+async function renderAnalytics() {
+  const [bins, reqs] = await Promise.all([
+    rows('waste_bins'),
+    rows('pickup_requests')
+  ]);
+
+  $('#content').innerHTML = `
+    <h2 class="page">Waste Analytics & Reports</h2>
+
+    <section class="panel">
+      <h3>Collection Reports</h3>
+
+      <div class="toolbar">
+        <select id="reportPeriod">
+          <option value="daily">Daily Report</option>
+          <option value="weekly">Weekly Report</option>
+          <option value="monthly">Monthly Report</option>
+        </select>
+        <button class="btn" id="exportReport">
+  ⬇ Export CSV
+</button>
+      </div>
+
+      <div class="cards" id="reportCards"></div>
+      <div id="reportDetails"></div>
+    </section>
+
+    ${panel(
+      'Waste Bin Overview',
+      simpleTable(bins, [
+        'bin_code',
+        'waste_type',
+        'fill_level',
+        'status'
+      ])
+    )}
+  `;
+
+  function updateReport() {
+    const period = $('#reportPeriod').value;
+    const now = new Date();
+    let start = new Date(now);
+
+    if (period === 'daily') {
+      start.setHours(0, 0, 0, 0);
+    } else if (period === 'weekly') {
+      start.setDate(now.getDate() - 6);
+      start.setHours(0, 0, 0, 0);
+    } else {
+      start = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+      );
+    }
+
+    const filtered = reqs.filter(r => {
+      const created = new Date(r.created_at);
+      return !isNaN(created) &&
+        created >= start &&
+        created <= now;
+    });
+
+    const collected = filtered.filter(
+      r => r.status === 'Collected'
+    ).length;
+
+    const pending = filtered.filter(
+      r => r.status === 'Pending'
+    ).length;
+
+    const remaining = filtered.length - collected - pending;
+
+    $('#reportCards').innerHTML = `
+      <div class="kpi">
+        <strong>${filtered.length}</strong>
+        <small>Total Requests</small>
+      </div>
+      <div class="kpi">
+        <strong>${collected}</strong>
+        <small>Collected</small>
+      </div>
+      <div class="kpi">
+        <strong>${pending}</strong>
+        <small>Pending</small>
+      </div>
+      <div class="kpi">
+        <strong>${remaining}</strong>
+        <small>Other Status</small>
+      </div>
+    `;
+
+    $('#reportDetails').innerHTML =
+      panel(
+        'Requests in Selected Period',
+        simpleTable(filtered, [
+          'request_code',
+          'waste_type',
+          'status',
+          'created_at'
+        ])
+      );
+  }
+
+  $('#reportPeriod').onchange = updateReport;
+  updateReport();
+
+$('#exportReport').onclick = () => {
+  const table = document.querySelector('#reportDetails table');
+
+  if (!table || !table.rows.length) {
+    alert('No report data available.');
+    return;
+  }
+
+  const csv = Array.from(table.rows)
+    .map(row =>
+      Array.from(row.cells)
+        .map(cell => `"${cell.innerText.replace(/"/g, '""')}"`)
+        .join(',')
+    )
+    .join('\n');
+
+  const blob = new Blob([csv], {
+    type: 'text/csv;charset=utf-8;'
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = `SmartCollect_${$('#reportPeriod').value}_Report.csv`;
+  link.click();
+
+  URL.revokeObjectURL(url);
+};
+
+}
+
+
+async function getOSRMRoadRoute(points) {
+  if (!points || points.length < 2) {
+    throw new Error('At least two GPS points are required.');
+  }
+
+  const coordinates = points
+    .map(([lat, lng]) => `${lng},${lat}`)
+    .join(';');
+
+  const url = `https://router.project-osrm.org/route/v1/driving/${coordinates}?overview=full&geometries=geojson&steps=false`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error('Road routing service is unavailable.');
+  }
+
+  const result = await response.json();
+
+  if (result.code !== 'Ok' || !result.routes?.length) {
+    throw new Error('No road route found.');
+  }
+
+  const route = result.routes[0];
+
+  return {
+    points: route.geometry.coordinates.map(
+      ([lng, lat]) => [lat, lng]
+    ),
+    distanceKm: route.distance / 1000,
+    durationMinutes: Math.round(route.duration / 60)
+  };
+}
+
+async function renderMapPage() {
+  const [locs, vehicles, history] = await Promise.all([
+    rows('vehicle_locations'),
+    rows('vehicles'),
+    rows('vehicle_route_history')
+  ]);
+
+  const vehicleOptions = vehicles.map(v =>
+    `<option value="${esc(v.vehicle_code)}">${esc(v.vehicle_code)} - ${esc(v.driver_name || 'Driver')}</option>`
+  ).join('');
+
+  $('#content').innerHTML = `
+    <h2 class="page">Live Map & Tracking</h2>
+
+    ${panel('Historical Route Viewer', `
+      <div class="toolbar">
+        <select id="historyVehicle">
+          <option value="">Select Vehicle</option>
+          ${vehicleOptions}
+        </select>
+
+        <input type="date" id="historyDate">
+
+        <button class="btn" id="viewHistory">View Route</button>
+        <button class="btn alt" id="showLive">Show Live Map</button>
+      </div>
+      <p id="historyStatus" class="muted">Select a vehicle and date to view its route.</p>
+    `)}
+
+    ${panel('📍 Vehicle Tracking Map', `
+      <div id="fullMap" class="mapwrap" style="height:520px"></div>
+    `)}
+  `;
+
+  setTimeout(() => makeMap('fullMap', locs, vehicles), 80);
+
+  $('#viewHistory').onclick = async () => {
+    const vehicleId = $('#historyVehicle').value;
+    const date = $('#historyDate').value;
+
+    if (!vehicleId || !date) {
+      return alert('Select a vehicle and date.');
+    }
+
+    const start = new Date(date + 'T00:00:00').toISOString();
+    const end = new Date(date + 'T00:00:00');
+    end.setDate(end.getDate() + 1);
+
+    const { data, error } = await sb
+      .from('vehicle_route_history')
+      .select('*')
+      .eq('vehicle_id', vehicleId)
+      .gte('recorded_at', start)
+      .lt('recorded_at', end.toISOString())
+      .order('recorded_at', { ascending: true });
+
+    if (error) {
+      $('#historyStatus').textContent = error.message;
+      return;
+    }
+
+    if (!data.length) {
+      $('#historyStatus').textContent = 'No route history found for this date.';
+      return;
+    }
+
+    const points = data.map(p => [
+      Number(p.latitude),
+      Number(p.longitude)
+    ]).filter(p =>
+      Number.isFinite(p[0]) && Number.isFinite(p[1])
+    );
+    const validRecords = data.filter(p =>
+  Number.isFinite(Number(p.latitude)) &&
+  Number.isFinite(Number(p.longitude))
+);
+
+function calculateDistance(a, b) {
+  const R = 6371;
+  const toRad = value => value * Math.PI / 180;
+
+  const dLat = toRad(b.latitude - a.latitude);
+  const dLon = toRad(b.longitude - a.longitude);
+
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(a.latitude)) *
+    Math.cos(toRad(b.latitude)) *
+    Math.sin(dLon / 2) ** 2;
+
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+
+let totalDistance = 0;
+
+for (let i = 1; i < validRecords.length; i++) {
+  totalDistance += calculateDistance(
+    validRecords[i - 1],
+    validRecords[i]
+  );
+}
+
+const first = validRecords[0];
+const last = validRecords[validRecords.length - 1];
+
+let durationMinutes = Math.round(
+  (new Date(last.recorded_at) - new Date(first.recorded_at)) / 60000
+);
+
+    if (!points.length) return;
+
+    
+try {
+  const roadRoute = await getOSRMRoadRoute(points);
+
+  totalDistance = roadRoute.distanceKm;
+  durationMinutes = roadRoute.durationMinutes;
+
+  if (window.historyRoute) {
+    map.removeLayer(window.historyRoute);
+  }
+
+  window.historyRoute = L.polyline(roadRoute.points, {
+    color: 'purple',
+    weight: 6
+  }).addTo(map);
+
+  map.fitBounds(window.historyRoute.getBounds(), {
+    padding: [30, 30]
+  });
+
+} catch (error) {
+  $('#historyStatus').textContent =
+    'Road route error: ' + error.message;
+  return;
+}
+
+   
+  $('#historyStatus').innerHTML = `
+  <h3>Route Summary</h3>
+  <p><b>Total Distance:</b> ${totalDistance.toFixed(2)} km</p>
+  <p><b>Journey Duration:</b> ${durationMinutes} minutes</p>
+  <p><b>Start Location:</b> ${Number(first.latitude).toFixed(5)},
+  ${Number(first.longitude).toFixed(5)}</p>
+  <p><b>End Location:</b> ${Number(last.latitude).toFixed(5)},
+  ${Number(last.longitude).toFixed(5)}</p>
+
+  <button class="btn" id="playRoute">▶ Play</button>
+  <button class="btn alt" id="pauseRoute">⏸ Pause</button>
+  <button class="btn alt" id="replayRoute">↻ Replay</button>
+  <button class="btn alt" id="speed1">1×</button>
+  <button class="btn alt" id="speed2">2×</button>
+  <button class="btn alt" id="speed4">4×</button>
+  <button class="btn" id="downloadPDF">⬇ Download PDF</button>
+`;
+$('#downloadPDF').onclick = () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const driverName =
+    $('#historyVehicle').selectedOptions[0].text;
+
+  doc.setFontSize(20);
+  doc.text('SmartCollect - Route Report', 20, 20);
+
+  doc.setFontSize(12);
+  doc.text(`Vehicle: ${vehicleId}`, 20, 40);
+  doc.text(`Driver: ${driverName}`, 20, 50);
+  doc.text(`Date: ${date}`, 20, 60);
+
+  doc.text(
+    `Total Distance: ${totalDistance.toFixed(2)} km`,
+    20, 80
+  );
+
+  doc.text(
+    `Journey Duration: ${durationMinutes} minutes`,
+    20, 90
+  );
+
+  doc.text(
+    `Start Location: ${Number(first.latitude).toFixed(5)}, ${Number(first.longitude).toFixed(5)}`,
+    20, 110
+  );
+
+  doc.text(
+    `End Location: ${Number(last.latitude).toFixed(5)}, ${Number(last.longitude).toFixed(5)}`,
+    20, 120
+  );
+
+  doc.text(
+    `Total GPS Points: ${validRecords.length}`,
+    20, 140
+  );
+
+  doc.save(`SmartCollect_${vehicleId}_${date}.pdf`);
+};
+window.playbackTimer = null;
+window.playbackIndex = 0;
+
+function moveVehicle() {
+  if (window.playbackIndex >= points.length) {
+    clearInterval(window.playbackTimer);
+    window.playbackTimer = null;
+    return;
+  }
+
+  const position = points[window.playbackIndex];
+
+  if (!window.playbackMarker) {
+    window.playbackMarker = L.marker(position).addTo(map);
+  } else {
+    window.playbackMarker.setLatLng(position);
+  }
+
+  map.panTo(position);
+  window.playbackIndex++;
+}
+window.playbackSpeed = 300;
+$('#playRoute').onclick = () => {
+  if (window.playbackTimer) return;
+
+  if (window.playbackIndex >= points.length) {
+    window.playbackIndex = 0;
+  }
+
+  window.playbackTimer = setInterval(moveVehicle, window.playbackSpeed || 300);
+};
+
+$('#pauseRoute').onclick = () => {
+  clearInterval(window.playbackTimer);
+  window.playbackTimer = null;
+};
+
+$('#replayRoute').onclick = () => {
+  clearInterval(window.playbackTimer);
+  window.playbackTimer = null;
+  window.playbackIndex = 0;
+
+  if (window.playbackMarker) {
+    map.removeLayer(window.playbackMarker);
+    window.playbackMarker = null;
+  }
+
+  window.playbackTimer = setInterval(moveVehicle, window.playbackSpeed || 300);
+};
+$('#speed1').onclick = () => setSpeed(300);
+$('#speed2').onclick = () => setSpeed(150);
+$('#speed4').onclick = () => setSpeed(75);
+
+function setSpeed(speed) {
+  window.playbackSpeed = speed;
+
+  if (window.playbackTimer) {
+    clearInterval(window.playbackTimer);
+    window.playbackTimer = setInterval(moveVehicle, speed);
+  }
+}
+  };
+
+  $('#showLive').onclick = () => go('Live Map & Tracking');
+
+  subscribeLocations(payload =>
+    updateVehicleMarker(payload, vehicles)
+  );
+}
+
+let vehicleMarkers = {};
+let vehicleRoutes = {};
+let routeLines = {};
+function makeMap(id, locs, vehicles = []) {
+  const el = document.getElementById(id);
+  if (!el || !window.L) return;
+
+  if (map) {
+    map.remove();
+    map = null;
+  }
+
+  vehicleMarkers = {};
+  vehicleRoutes = {};
+  routeLines = {};
+
+  map = L.map(id).setView([11.341, 77.717], 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  (locs || []).forEach(p => {
+    const lat = Number(p.latitude);
+    const lng = Number(p.longitude);
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+    const vehicle = vehicles.find(
+      v => v.vehicle_code === p.vehicle_id
+    );
+
+    const position = [lat, lng];
+
+    vehicleRoutes[p.vehicle_id] = [position];
+
+    routeLines[p.vehicle_id] = L.polyline(
+      [position],
+      { color: 'blue', weight: 5 }
+    ).addTo(map);
+
+    const popup = `
+      <b>Vehicle:</b> ${esc(p.vehicle_id)}<br>
+      <b>Driver:</b> ${esc(vehicle?.driver_name || 'Unknown')}<br>
+      <b>Status:</b> ${esc(vehicle?.status || 'Unknown')}<br>
+      <b>Last Update:</b> ${esc(p.recorded_at)}
+    `;
+
+    vehicleMarkers[p.vehicle_id] = L.marker(position)
+      .addTo(map)
+      .bindPopup(popup);
+  });
+
+  setTimeout(() => {
+    if (map) map.invalidateSize();
+  }, 100);
+}
+function updateVehicleMarker(payload, vehicles = []) {
+  if (!map || !payload) return;
+
+  const p = payload.new;
+
+  if (!p || !p.vehicle_id) return;
+
+  const lat = Number(p.latitude);
+  const lng = Number(p.longitude);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+  const position = [lat, lng];
+
+  const vehicle = vehicles.find(
+    v => v.vehicle_code === p.vehicle_id
+  );
+
+  const popup = `
+    <b>Vehicle:</b> ${esc(p.vehicle_id)}<br>
+    <b>Driver:</b> ${esc(vehicle?.driver_name || 'Unknown')}<br>
+    <b>Status:</b> ${esc(vehicle?.status || 'Unknown')}<br>
+    <b>Last Update:</b> ${esc(p.recorded_at)}
+  `;
+
+  if (!vehicleRoutes[p.vehicle_id]) {
+    vehicleRoutes[p.vehicle_id] = [];
+  }
+
+  vehicleRoutes[p.vehicle_id].push(position);
+
+  if (routeLines[p.vehicle_id]) {
+    routeLines[p.vehicle_id].setLatLngs(
+      vehicleRoutes[p.vehicle_id]
+    );
+  } else {
+    routeLines[p.vehicle_id] = L.polyline(
+      vehicleRoutes[p.vehicle_id],
+      { color: 'blue', weight: 5 }
+    ).addTo(map);
+  }
+
+  if (vehicleMarkers[p.vehicle_id]) {
+    vehicleMarkers[p.vehicle_id]
+      .setLatLng(position)
+      .setPopupContent(popup);
+  } else {
+    vehicleMarkers[p.vehicle_id] = L.marker(position)
+      .addTo(map)
+      .bindPopup(popup);
+  }
+}
+function subscribeLocations(cb){if(liveSub)sb.removeChannel(liveSub);liveSub=sb.channel('vehicle-location-live').on('postgres_changes',{event:'*',schema:'public',table:'vehicle_locations'},payload=>cb(payload)).subscribe()}
+let currentPage='Dashboard';async function refreshCurrent(){if(profile?.role==='admin')await go(currentPage)}
+async function renderDriver() {
+  document.querySelector('.nav').classList.add('hide');
+
+  $('#content').innerHTML = `
+    <div class="driverbox">
+
+      <h2>Driver Dashboard</h2>
+
+      <div class="panel">
+        <h3>Vehicle: ${esc(profile.vehicle_id || 'Not assigned')}</h3>
+
+        <h3>Assigned Pickup Requests</h3>
+        <div id="assignedRequests">
+          Loading assigned requests...
+        </div>
+      </div>
+
+      <h2>Driver GPS Tracking</h2>
+
+      <div class="panel">
+        <p class="muted">
+          GPS sharing starts when you begin duty.
+          Keep this page open while working.
+        </p>
+
+        <div id="gpsStatus" class="driverstatus">
+          ● Off duty – location is not being shared
+        </div>
+
+        <p id="coords" class="muted">
+          Waiting for GPS permission.
+        </p>
+
+        <button id="startDuty" class="btn">
+          Start duty & share location
+        </button>
+
+        <button id="stopDuty" class="btn alt">
+          End duty
+        </button>
+
+        <div id="driverMap" class="mapwrap" style="margin-top:15px"></div>
+
+        <div class="notice">
+          Allow location access when your browser asks.
+          Use HTTPS and enable Location Services on your phone.
+        </div>
+      </div>
+    </div>
+  `;
+
+  // LOAD ASSIGNED PICKUP REQUESTS
+  const requestContainer = $('#assignedRequests');
+
+  if (!profile.vehicle_id) {
+    requestContainer.textContent = 'No vehicle assigned to your account.';
+  } else {
+    const { data: requests, error } = await sb
+      .from('pickup_requests')
+      .select('*')
+      .eq('vehicle_id', profile.vehicle_id)
+      .neq('status', 'Collected')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      requestContainer.textContent = 'Error loading requests: ' + error.message;
+    } else if (!requests || requests.length === 0) {
+      requestContainer.textContent = 'No pending pickup requests assigned to your vehicle.';
+    } else {
+      requestContainer.innerHTML = requests.map(request => `
+        <div class="panel" data-request-card="${esc(request.id)}">
+          <h3>${esc(request.request_code)}</h3>
+          <p><b>Citizen:</b> ${esc(request.citizen_name || '-')}</p>
+          <p><b>Phone:</b> ${esc(request.phone || '-')}</p>
+          <p><b>Address:</b> ${esc(request.pickup_address || '-')}</p>
+          <p><b>Waste Type:</b> ${esc(request.waste_type || '-')}</p>
+          <p><b>Status:</b> ${esc(request.status)}</p>
+
+          <button class="btn collect-request"
+            data-request-id="${esc(request.id)}">
+            Mark as Collected
+          </button>
+        </div>
+      `).join('');
+    }
+  }
+
+  // MARK REQUEST AS COLLECTED
+  requestContainer.addEventListener('click', async (e) => {
+    const button = e.target.closest('.collect-request');
+    if (!button) return;
+
+    const id = button.dataset.requestId;
+
+    if (!confirm('Mark this pickup request as Collected?')) return;
+
+    button.disabled = true;
+    button.textContent = 'Updating...';
+
+    const { error } = await sb
+      .from('pickup_requests')
+      .update({ status: 'Collected' })
+      .eq('id', id)
+      .eq('vehicle_id', profile.vehicle_id);
+
+    if (error) {
+      alert('Update failed: ' + error.message);
+      button.disabled = false;
+      button.textContent = 'Mark as Collected';
+      return;
+    }
+    const { data: request } = await sb
+  .from('pickup_requests')
+  .select('request_code')
+  .eq('id', id)
+  .single();
+
+await createNotification(
+  'Pickup Completed',
+  `Request ${request?.request_code || id} has been marked as Collected.`,
+  id
+);
+    alert('Pickup marked as Collected successfully!');
+    button.closest('[data-request-card]').remove();
+
+    if (!requestContainer.querySelector('[data-request-card]')) {
+      requestContainer.textContent = 'All assigned pickup requests are completed!';
+    }
+  });
+
+  // INITIALIZE GPS MAP
+  setTimeout(() => {
+    if (window.L) {
+      map = L.map('driverMap').setView([11.341, 77.717], 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+    }
+  }, 100);
+
+  $('#startDuty').onclick = startDuty;
+  $('#stopDuty').onclick = stopDuty;
+}
+async function startDuty() {
+  if (!profile.vehicle_id) {
+    return alert('Your admin must assign a vehicle_id.');
+  }
+
+  if (simulationTimer !== null) return;
+
+  $('#gpsStatus').textContent = '● Starting vehicle simulation...';
+
+  const { error } = await sb
+    .from('vehicles')
+    .update({ status: 'On Route' })
+    .eq('vehicle_code', profile.vehicle_id);
+
+  if (error) {
+    $('#gpsStatus').textContent = error.message;
+    return;
+  }
+
+  // Simulated vehicle route around Erode
+  const route = [
+    [11.3400, 77.7100],
+    [11.3420, 77.7120],
+    [11.3440, 77.7140],
+    [11.3460, 77.7160],
+    [11.3480, 77.7180],
+    [11.3500, 77.7200],
+    [11.3520, 77.7220],
+    [11.3540, 77.7240]
+  ];
+
+  let index = 0;
+
+  async function sendLocation() {
+    const [latitude, longitude] = route[index];
+
+    const payload = {
+      vehicle_id: profile.vehicle_id,
+      latitude,
+      longitude,
+      accuracy_m: 5,
+      recorded_at: new Date().toISOString()
+    };
+
+    const { error } = await sb
+      .from('vehicle_locations')
+      .upsert(payload, { onConflict: 'vehicle_id' });
+      // SAVE GPS POINT TO PERMANENT ROUTE HISTORY
+const { error: historyError } = await sb
+  .from('vehicle_route_history')
+  .insert({
+    vehicle_id: profile.vehicle_id,
+    latitude: latitude,
+    longitude: longitude,
+    recorded_at: new Date().toISOString()
+  });
+
+if (historyError) {
+  console.error('Route history save failed:', historyError.message);
+}
+
+    if (error) {
+      $('#gpsStatus').textContent = 'GPS upload failed: ' + error.message;
+      clearInterval(simulationTimer);
+      simulationTimer = null;
+      return;
+    }
+
+    $('#gpsStatus').textContent = '● Vehicle moving – simulated GPS active';
+
+    $('#coords').textContent =
+      `Lat ${latitude} · Lon ${longitude}`;
+
+    if (map) {
+      if (window.driverMarker) {
+        window.driverMarker.setLatLng([latitude, longitude]);
+      } else {
+        window.driverMarker = L.marker([latitude, longitude]).addTo(map);
+      }
+
+      map.setView([latitude, longitude], 15);
+    }
+
+    index = (index + 1) % route.length;
+  }
+
+  await sendLocation();
+
+  if (simulationTimer === null) {
+    simulationTimer = setInterval(sendLocation, 4000);
+  }
+}
+async function stopDuty() {
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+  }
+
+  if (simulationTimer !== null) {
+    clearInterval(simulationTimer);
+    simulationTimer = null;
+  }
+
+  await sb.from('vehicles')
+    .update({ status: 'Available' })
+    .eq('vehicle_code', profile.vehicle_id);
+
+  $('#gpsStatus').textContent =
+    '● Off duty – location sharing stopped';
+}
+$('#nav').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-page]');
+    if (!b) return;
+
+    currentPage = b.dataset.page;
+    console.log("Navigation clicked:", currentPage, "Role:", profile?.role);
+
+    try {
+        await go(currentPage);
+        if (window.innerWidth <= 700) {
+  document.querySelector('.side').classList.remove('menu-open');
+}
+    } catch (error) {
+        console.error('Navigation error:', error);
+        $('#content').innerHTML =
+            `<div class="notice">Error: ${error.message}</div>`;
+            if (table === 'pickup_requests') {
+  const vehicleSelect = document.getElementById('requestVehicleId');
+
+  const { data: vehicles, error } = await sb
+    .from('vehicles')
+    .select('vehicle_code, driver_name')
+    .order('vehicle_code');
+
+  if (error) {
+    console.error('Vehicle loading error:', error);
+  } else {
+    vehicles.forEach(vehicle => {
+      const option = document.createElement('option');
+      option.value = vehicle.vehicle_code;
+      option.textContent = `${vehicle.vehicle_code} - ${vehicle.driver_name}`;
+      vehicleSelect.appendChild(option);
+    });
+  }
+}
+    }
+});
+
+(async()=>{if(sb){const {data}=await sb.auth.getSession();if(data.session){session=data.session;await enterApp()}}})();
+</script></body></html>
